@@ -31,3 +31,5 @@ inner join
 	[dbo].[CurrencyHistory] curhis on
 	cur.CurrencyKey= curhis.CurrencyKey
 where datekey='20110420'
+
+
