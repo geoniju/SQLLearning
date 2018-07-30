@@ -42,12 +42,18 @@
 			 cal.YearNum
 			,cal.WeekNumYear
 
+
+
+
+
 --	4:	Avg session duration New visitor by week			(Paul)		
 
 	select
-		 year([DateKey]) as YearNum
+	     datepart(year,[DateKey]) as YearNum
+		 --year([DateKey]) as YearNum
 		,datepart(week,[DateKey]) as WeekNum
 		,avg(datediff(millisecond,0,AvgSessionDuration))/1000 as  AvgSessionDuration		-- Use Datediff here to calculate the seconds as we cannot just use numeri functions on time data types
+		,avg(datediff(second,0,AvgSessionDuration)) as  AvgSessionDurationinsec
 		,count(va.[UserTypeKey]) as WeeklyNewVisitor
 	from
 		[dbo].[VisitorAnalysis] va inner join
@@ -60,13 +66,26 @@
 		 year([DateKey]) 
 		,datepart(week,[DateKey]) 
 
+select 
+	AvgSessionDuration
+
+from 
+[VisitorAnalysis]
+
+
+select getdate()
+union all
+select CURRENT_TIMESTAMP
+
+
 --	5:	Sessions vs avg Pages/Session by week				(Paul)		
 
 	select
 		 year([DateKey]) as YearNum
 		,datepart(week,[DateKey]) as WeekNum
 		,sum([Sessions]) as Sessions
-		,cast(avg([PagesSession]) as decimal(18,2)) as AvgPagesSession			
+		,cast(avg([PagesSession]) as decimal(18,2)) as AvgPagesSession
+		,avg([PagesSession])			
 	from
 		[dbo].[VisitorAnalysis] va
 	group by

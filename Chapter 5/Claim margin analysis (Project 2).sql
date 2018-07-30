@@ -19,9 +19,9 @@ use [Chapter 4 - Insurance] ;				-- <<< use chapter 4 Insurance database for thi
 --      **********
 select 
 	 [underwriting_year]
-	,cl.ClaimType
-	,[total_tpd_cover_premium]
-	,sum(claimpaidamount) as TotalClaimPaid
+	,cl.ClaimType,
+	sum(total_tpd_cover_premium) as total_tpd_cover_premium_sum
+	,sum(cl.claimpaidamount) as TotalClaimPaid
 	,sum([total_tpd_cover_premium]) - sum(cl.claimpaidamount) as CoverProfit 
 from
 	[dbo].[MemberClaims] cl inner join
@@ -32,7 +32,7 @@ from
 group by
 	 [underwriting_year]
 	,cl.ClaimType
-	,[total_tpd_cover_premium]
+	---,[total_tpd_cover_premium]
 order by
 	 [underwriting_year]
 
@@ -81,3 +81,72 @@ group by
 --										*******
 
 
+
+
+
+/*
+Quiz 27 | 3 Questions
+Construct a query to provide insight as to the profitability of the DTH insurance for the years 2012 to 2014.
+
+You will need to compare claim paid for these years to the premium collected overall for these years.
+
+The query has to return the following metrics …
+
+1: Underwriting year
+
+2: Claim type (DTH)
+
+3: Claim count (DTH)
+
+4: Total Death premium value
+
+5: Count of policy holders (Death policies)
+
+6: Total claim paid (DTH)
+
+7: The margin value (Profit)
+
+*/
+
+
+
+
+
+select 
+	 YearlyPremium.underwriting_year
+	,cl.ClaimType
+	,count(cl.memberkey) ClaimCount
+	,YearlyPremium.DTHCoverPremium as DTHCoverPremium
+	,YearlyPremium.DeathCoverPolicyHolderCount as DeathCoverPolicyHolderCount
+	,sum(claimpaidamount) as TotalClaimPaid
+	,YearlyPremium.DTHCoverPremium - sum(cl.claimpaidamount) as CoverProfit 
+from
+	[dbo].[MemberClaims] cl
+
+outer apply
+
+	(
+		select
+			 underwriting_year 
+			 ,count([total_death_cover_premium]) as DeathCoverPolicyHolderCount
+			,sum([total_death_cover_premium]) as DTHCoverPremium
+			,sum([total_tpd_cover_premium])	  as TPDCoverPremium
+			,sum([total_ip_cover_premium])    as IPCoverPremium
+		from
+			[dbo].[MemberCover] mc
+		where
+			mc.underwriting_year = year(cl.claimpaiddate)
+		group by
+			underwriting_year
+			
+
+	) as YearlyPremium
+
+where
+	year(cl.claimpaiddate) in (2012,2013,2014) and	
+	cl.ClaimType = 'DTH'
+group by 
+	 YearlyPremium.underwriting_year
+	,YearlyPremium.DTHCoverPremium
+	,cl.ClaimType,
+	YearlyPremium.DeathCoverPolicyHolderCount

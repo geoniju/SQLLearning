@@ -3,8 +3,8 @@
 
 select 
 distinct cust.customerkey,
-LastName,
-OrderQuantity,
+cust.LastName,
+os.OrderQuantity,
 (select min(orderdate) from OnlineSales os1 where os1.customerkey=cust.customerkey	and 
  OrderDate between '2014-01-01' and '2014-01-31') as FirstOrderDate,
  (select max(orderdate) from OnlineSales os1 where os1.customerkey=cust.customerkey	and 
@@ -13,6 +13,46 @@ from
 customer cust left join
 OnlineSales os on cust.CustomerKey=os.CustomerKey and
 					os.OrderDate between '2014-01-01' and '2014-01-31'
+order by os.OrderQuantity desc
+----other way using group by 
+
+select 
+ cust.customerkey,
+cust.LastName,
+os.OrderQuantity,
+ min(os.orderdate)  as FirstOrderDate,
+max(os.orderdate) as LastOrderDate
+from
+customer cust left join
+OnlineSales os on cust.CustomerKey=os.CustomerKey and
+					os.OrderDate between '2014-01-01' and '2014-01-31'
+group by 
+cust.customerkey,
+cust.LastName,
+os.OrderQuantity
+order by os.OrderQuantity desc
+	
+
+
+
+
+
+
+
+select * from 
+OnlineSales
+where customerkey='16368'
+
+select 
+	customerkey,count(*)
+from
+	OnlineSales
+where OrderDate between '2014-01-01' and '2014-01-31'
+group by
+CustomerKey
+having
+	count(*)>1
+
 
 ---using outer apply is like a left join (as above but nicer to code and easy to add more columns)
 

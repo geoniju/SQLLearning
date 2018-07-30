@@ -107,3 +107,47 @@ from
 
 where 
 MaritalStatus='S'
+
+
+select avg([NumberChildrenAtHome]) as [NumberChildrenAtHome],
+
+[MaritalStatus]
+
+from
+
+[dbo].[Customer]
+
+where
+
+[MaritalStatus] = 'M' or
+
+[MaritalStatus] = 'S'
+
+group by
+
+[MaritalStatus]
+
+
+select avg([NumberChildrenAtHome]) as [NumberChildrenAtHome],
+
+[MaritalStatus]
+
+from
+
+[dbo].[Customer]
+
+
+group by
+
+[MaritalStatus]
+
+having 
+
+[MaritalStatus] = 'M' or
+
+[MaritalStatus] = 'S'
+
+select 142 + 156 / 2 
+select (142 + 156) / 2 
+
+select * from product
